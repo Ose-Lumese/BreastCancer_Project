@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Breast Cancer Prediction System</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #fff5f8; display: flex; justify-content: center; padding: 40px; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 400px; }
+        h2 { color: #d63384; text-align: center; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #555; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #d63384; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #b82b6f; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 6px; text-align: center; font-weight: bold; display: none; }
+        .malignant { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .benign { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .note { font-size: 10px; color: #999; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Breast Cancer Predictor</h2>
+    
+    <div class="input-group">
+        <label>Radius Mean</label>
+        <input type="number" id="radius_mean" step="0.001" placeholder="e.g. 17.99">
+    </div>
+    <div class="input-group">
+        <label>Texture Mean</label>
+        <input type="number" id="texture_mean" step="0.001" placeholder="e.g. 10.38">
+    </div>
+    <div class="input-group">
+        <label>Perimeter Mean</label>
+        <input type="number" id="perimeter_mean" step="0.001" placeholder="e.g. 122.8">
+    </div>
+    <div class="input-group">
+        <label>Area Mean</label>
+        <input type="number" id="area_mean" step="0.001" placeholder="e.g. 1001.0">
+    </div>
+    <div class="input-group">
+        <label>Smoothness Mean</label>
+        <input type="number" id="smoothness_mean" step="0.0001" placeholder="e.g. 0.1184">
+    </div>
+
+    <button onclick="getPrediction()">Predict Result</button>
+
+    <div id="result"></div>
+    <p class="note">Educational purposes only. Not a medical diagnostic tool.</p>
+</div>
+
+<script>
+    async function getPrediction() {
+        const payload = {
+            radius_mean: document.getElementById('radius_mean').value,
+            texture_mean: document.getElementById('texture_mean').value,
+            perimeter_mean: document.getElementById('perimeter_mean').value,
+            area_mean: document.getElementById('area_mean').value,
+            smoothness_mean: document.getElementById('smoothness_mean').value
+        };
+
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        const resDiv = document.getElementById('result');
+        resDiv.style.display = 'block';
+        resDiv.innerText = "Prediction: " + data.prediction;
+
+        if (data.prediction === "Malignant") {
+            resDiv.className = 'malignant';
+        } else {
+            resDiv.className = 'benign';
+        }
+    }
+</script>
+
+</body>
+</html>
